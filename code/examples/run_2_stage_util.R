@@ -334,7 +334,9 @@ run_bayes_model = function(df_censored,metabolites,cores=4,chains=4,iter=2000,
 
 
 
-make_df = function(n_0,mu_0,sigma_0,n_1,mu_1,sigma_1,frac_sig=0.5,censor=TRUE,max_missing=0.6,alpha=-1,beta=-1) {
+make_df = function(n_0,mu_0,sigma_0,n_1,mu_1,sigma_1,frac_sig=0.5,censor=TRUE,max_missing=0.4,alpha=-1,beta=-1) {
+    stopifnot(max_missing <= 0.4)
+    
     diffs = abs( mu_1 - mu_0) / sqrt( (diag(sigma_0)^2)/n_0 + (diag(sigma_1)^2)/n_1  )
     #print(diffs)
     m = length(diffs)
@@ -372,7 +374,7 @@ make_df = function(n_0,mu_0,sigma_0,n_1,mu_1,sigma_1,frac_sig=0.5,censor=TRUE,ma
             df_censored[ (df_censored[, i] < thresholds[i]), i ] = NA
             est.thresholds[i] = min( df_censored[ , i ], na.rm = T)
             est.naive_impute[i] = log( min( exp(df_censored[ , i ]), na.rm = T) / 2 )
-            df_naive_impute[ (df_naive_impute[, i] < thresholds[i]), i ] = est.thresholds[i]
+            df_naive_impute[ (df_naive_impute[, i] < thresholds[i]), i ] = est.naive_impute[i]
         }
     }
     
